@@ -15,7 +15,16 @@ function App() {
     <BrowserRouter>
       <div className="min-h-screen bg-gray-950 text-white">
         <Routes>
-          <Route path="/" element={<h1 className="text-4xl font-bold text-center pt-20 text-purple-400">Welcome to CodeHire 🚀</h1>} />
+          <Route path="/" element={
+            <div className="min-h-screen bg-gray-950 text-white flex flex-col items-center justify-center">
+              <h1 className="text-5xl font-bold text-purple-400 mb-4">CodeHire 🚀</h1>
+              <p className="text-gray-400 text-xl mb-8">The ultimate coding interview platform</p>
+              <div className="flex gap-4">
+                <a href="/register" className="bg-purple-600 hover:bg-purple-700 px-8 py-3 rounded-lg font-semibold transition text-white">Get Started</a>
+                <a href="/login" className="bg-gray-800 hover:bg-gray-700 px-8 py-3 rounded-lg font-semibold transition text-white">Login</a>
+              </div>
+            </div>
+          } />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/dashboard" element={<Dashboard />} />
