@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import axios from 'axios';
+import API from '../api';
 import { useNavigate } from 'react-router-dom';
 
 function Contests() {
@@ -15,7 +15,7 @@ function Contests() {
 
   const fetchContests = async () => {
     try {
-      const res = await axios.get('http://localhost:5000/api/contests');
+      const res = await API.get('/api/contests');
       setContests(res.data);
     } catch (err) {
       console.error('Error fetching contests');

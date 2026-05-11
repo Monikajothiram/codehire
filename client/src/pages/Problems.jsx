@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import axios from 'axios';
+import API from '../api';
 import { useNavigate } from 'react-router-dom';
 
 function Problems() {
@@ -15,7 +15,7 @@ function Problems() {
 
   const fetchProblems = async () => {
     try {
-      const res = await axios.get('http://localhost:5000/api/problems');
+      const res = await API.get('/api/problems');
       setProblems(res.data);
     } catch (err) {
       console.error('Error fetching problems');

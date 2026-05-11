@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Editor from '@monaco-editor/react';
-import axios from 'axios';
+import API from '../api';
 
 const LANGUAGES = [
   { label: 'Python', value: 'python', id: 71 },
@@ -37,7 +37,7 @@ function Solve() {
 
   const fetchProblem = async () => {
     try {
-      const res = await axios.get(`http://localhost:5000/api/problems/${id}`);
+      const res = await API.get(`/api/problems/${id}`);
       setProblem(res.data);
     } catch (err) {
       console.error('Error fetching problem');
@@ -55,7 +55,7 @@ function Solve() {
     setOutput('Running...');
     setVerdict('');
     try {
-      const res = await axios.post('http://localhost:5000/api/code/run', {
+      const res = await API.post('/api/code/run', {
         source_code: code,
         language_id: language.id,
       });

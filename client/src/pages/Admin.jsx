@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import API from '../api';
 
 function Admin() {
   const navigate = useNavigate();
@@ -23,7 +23,7 @@ function Admin() {
 
   const fetchProblems = async () => {
     try {
-      const res = await axios.get('http://localhost:5000/api/problems');
+      const res = await API.get('/api/problems');
       setProblems(res.data);
     } catch (err) { console.error(err); }
   };
@@ -31,7 +31,7 @@ function Admin() {
   const fetchUsers = async () => {
     try {
       const token = localStorage.getItem('token');
-      const res = await axios.get('http://localhost:5000/api/auth/users', {
+      const res = await API.get('/api/auth/users', {
         headers: { authorization: token }
       });
       setUsers(res.data);
@@ -41,7 +41,7 @@ function Admin() {
   const handleAddProblem = async () => {
     try {
       const token = localStorage.getItem('token');
-      await axios.post('http://localhost:5000/api/problems', {
+      await API.post('/api/problems', {
         ...newProblem,
         testcases: JSON.parse(newProblem.testcases)
       }, { headers: { authorization: token } });
@@ -62,22 +62,13 @@ function Admin() {
 
       <div className="p-8">
         <div className="flex gap-4 mb-8">
-          <button
-            onClick={() => setActiveTab('problems')}
-            className={`px-6 py-3 rounded-lg font-semibold transition ${activeTab === 'problems' ? 'bg-purple-600' : 'bg-gray-800 hover:bg-gray-700'}`}
-          >
+          <button onClick={() => setActiveTab('problems')} className={`px-6 py-3 rounded-lg font-semibold transition ${activeTab === 'problems' ? 'bg-purple-600' : 'bg-gray-800 hover:bg-gray-700'}`}>
             Problems ({problems.length})
           </button>
-          <button
-            onClick={() => setActiveTab('add')}
-            className={`px-6 py-3 rounded-lg font-semibold transition ${activeTab === 'add' ? 'bg-purple-600' : 'bg-gray-800 hover:bg-gray-700'}`}
-          >
+          <button onClick={() => setActiveTab('add')} className={`px-6 py-3 rounded-lg font-semibold transition ${activeTab === 'add' ? 'bg-purple-600' : 'bg-gray-800 hover:bg-gray-700'}`}>
             Add Problem
           </button>
-          <button
-            onClick={() => setActiveTab('users')}
-            className={`px-6 py-3 rounded-lg font-semibold transition ${activeTab === 'users' ? 'bg-purple-600' : 'bg-gray-800 hover:bg-gray-700'}`}
-          >
+          <button onClick={() => setActiveTab('users')} className={`px-6 py-3 rounded-lg font-semibold transition ${activeTab === 'users' ? 'bg-purple-600' : 'bg-gray-800 hover:bg-gray-700'}`}>
             Users ({users.length})
           </button>
         </div>
@@ -113,42 +104,15 @@ function Admin() {
           <div className="bg-gray-900 p-6 rounded-2xl border border-gray-800 max-w-2xl">
             <h2 className="text-xl font-bold mb-6">Add New Problem</h2>
             <div className="flex flex-col gap-4">
-              <input
-                type="text"
-                placeholder="Problem Title"
-                value={newProblem.title}
-                onChange={(e) => setNewProblem({...newProblem, title: e.target.value})}
-                className="bg-gray-800 text-white px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
-              />
-              <textarea
-                placeholder="Problem Description"
-                value={newProblem.description}
-                onChange={(e) => setNewProblem({...newProblem, description: e.target.value})}
-                rows={4}
-                className="bg-gray-800 text-white px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
-              />
-              <select
-                value={newProblem.difficulty}
-                onChange={(e) => setNewProblem({...newProblem, difficulty: e.target.value})}
-                className="bg-gray-800 text-white px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
-              >
+              <input type="text" placeholder="Problem Title" value={newProblem.title} onChange={(e) => setNewProblem({...newProblem, title: e.target.value})} className="bg-gray-800 text-white px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500" />
+              <textarea placeholder="Problem Description" value={newProblem.description} onChange={(e) => setNewProblem({...newProblem, description: e.target.value})} rows={4} className="bg-gray-800 text-white px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500" />
+              <select value={newProblem.difficulty} onChange={(e) => setNewProblem({...newProblem, difficulty: e.target.value})} className="bg-gray-800 text-white px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
                 <option>Easy</option>
                 <option>Medium</option>
                 <option>Hard</option>
               </select>
-              <textarea
-                placeholder='Test Cases JSON: [{"input":"","output":""}]'
-                value={newProblem.testcases}
-                onChange={(e) => setNewProblem({...newProblem, testcases: e.target.value})}
-                rows={3}
-                className="bg-gray-800 text-white px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 font-mono text-sm"
-              />
-              <button
-                onClick={handleAddProblem}
-                className="bg-purple-600 hover:bg-purple-700 py-3 rounded-lg font-semibold transition"
-              >
-                Add Problem
-              </button>
+              <textarea placeholder='Test Cases JSON: [{"input":"","output":""}]' value={newProblem.testcases} onChange={(e) => setNewProblem({...newProblem, testcases: e.target.value})} rows={3} className="bg-gray-800 text-white px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 font-mono text-sm" />
+              <button onClick={handleAddProblem} className="bg-purple-600 hover:bg-purple-700 py-3 rounded-lg font-semibold transition">Add Problem</button>
             </div>
           </div>
         )}
