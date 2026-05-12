@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const http = require('http');
+const https = require('https');
 const { Server } = require('socket.io');
 const db = require('./config/db');
 const authRoutes = require('./routes/authRoutes');
@@ -15,7 +16,7 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: 'http://localhost:5173',
+    origin: '*',
     methods: ['GET', 'POST']
   }
 });
@@ -57,4 +58,11 @@ io.on('connection', (socket) => {
 const PORT = process.env.PORT || 5000;
 server.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
+
+  // Keep backend awake on Render
+  setInterval(() => {
+    https.get('https://codehire-backend-5iy3.onrender.com', () => {
+      console.log('Keep alive ping sent');
+    }).on('error', () => {});
+  }, 840000);
 });
