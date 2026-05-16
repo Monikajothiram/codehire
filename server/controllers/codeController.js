@@ -1,37 +1,40 @@
 const axios = require('axios');
 
 const LANGUAGE_MAP = {
-  71: { language: 'python', version: '3.10.0' },
-  63: { language: 'javascript', version: '18.15.0' },
-  54: { language: 'c++', version: '10.2.0' },
-  62: { language: 'java', version: '15.0.2' },
-  50: { language: 'c', version: '10.2.0' },
+  71: 'python',
+  63: 'javascript',
+  54: 'cpp',
+  62: 'java',
+  50: 'c',
 };
 
 exports.runCode = async (req, res) => {
   const { source_code, language_id } = req.body;
+  const language = LANGUAGE_MAP[language_id];
 
-  const lang = LANGUAGE_MAP[language_id];
-  if (!lang) {
+  if (!language) {
     return res.status(400).json({ output: 'Language not supported' });
   }
 
   try {
     const response = await axios.post(
-      'https://emkc.org/api/v2/piston/execute',
+      `https://glot.io/api/run/${language}/latest`,
       {
-        language: lang.language,
-        version: lang.version,
-        files: [{ content: source_code }],
+        files: [{ name: 'main', content: source_code }]
       },
-      { timeout: 15000 }
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Token anonymous'
+        },
+        timeout: 15000
+      }
     );
 
-    const { run } = response.data;
-    const output = run.stdout || run.stderr || 'No output';
+    const output = response.data.stdout || response.data.stderr || 'No output';
     res.json({ output });
   } catch (err) {
-    console.error('Piston error:', err.message);
+    console.error('Glot error:', err.message);
     res.status(500).json({ output: 'Error running code. Try again.' });
   }
 };
