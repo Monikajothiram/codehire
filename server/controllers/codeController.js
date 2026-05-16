@@ -1,43 +1,37 @@
 const axios = require('axios');
 
+const LANGUAGE_MAP = {
+  71: { language: 'python', version: '3.10.0' },
+  63: { language: 'javascript', version: '18.15.0' },
+  54: { language: 'c++', version: '10.2.0' },
+  62: { language: 'java', version: '15.0.2' },
+  50: { language: 'c', version: '10.2.0' },
+};
+
 exports.runCode = async (req, res) => {
   const { source_code, language_id } = req.body;
 
+  const lang = LANGUAGE_MAP[language_id];
+  if (!lang) {
+    return res.status(400).json({ output: 'Language not supported' });
+  }
+
   try {
-    const submitRes = await axios.post(
-      'https://ce.judge0.com/submissions?base64_encoded=false&wait=true',
-      { source_code, language_id },
+    const response = await axios.post(
+      'https://emkc.org/api/v2/piston/execute',
       {
-        headers: {
-          'Content-Type': 'application/json',
-          'X-Auth-Token': 'your_judge0_token'
-        },
-        timeout: 10000
-      }
+        language: lang.language,
+        version: lang.version,
+        files: [{ content: source_code }],
+      },
+      { timeout: 15000 }
     );
 
-    const { stdout, stderr, compile_output, status } = submitRes.data;
-    const output = stdout || compile_output || stderr || status?.description || 'No output';
+    const { run } = response.data;
+    const output = run.stdout || run.stderr || 'No output';
     res.json({ output });
   } catch (err) {
-    try {
-      const submitRes = await axios.post(
-        'https://judge0-ce.p.rapidapi.com/submissions?base64_encoded=false&wait=true',
-        { source_code, language_id },
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            'X-RapidAPI-Key': '8e8d2e0f8emsh3f6b8a8c8d8e8f8p1a2b3cjsn4d5e6f7a8b',
-            'X-RapidAPI-Host': 'judge0-ce.p.rapidapi.com',
-          },
-          timeout: 10000
-        }
-      );
-      const { stdout, stderr, compile_output, status } = submitRes.data;
-      const output = stdout || compile_output || stderr || status?.description || 'No output';
-      res.json({ output });
-    } catch (err2) {
-      res.status(500).json({ output: 'Error connecting to code execution engine. Please try again.' });
-    }
+    console.error('Piston error:', err.message);
+    res.status(500).json({ output: 'Error running code. Try again.' });
   }
 };
